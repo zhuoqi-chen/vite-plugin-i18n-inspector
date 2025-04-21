@@ -21,7 +21,7 @@
     "build": "tsup",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "pnpm build",
-    "example": "pnpm build && cd example && pnpm dev"
+    "example": "pnpm build && cd example && pnpm install && pnpm dev"
   },
   "keywords": [
     "vite-plugin",

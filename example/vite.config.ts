@@ -11,6 +11,8 @@ const config = defineConfig({
   ],
 }); 
 if (process.env.NODE_ENV === 'development') {
-  config.plugins.push(createI18nInspector());
+  config.plugins.push(createI18nInspector({
+    editor: 'cursor'
+  }));
 }
 export default config;

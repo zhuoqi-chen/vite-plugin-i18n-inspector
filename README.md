@@ -10,7 +10,8 @@ In development environments, developers can click on translated text on the page
 
 - Automatically adds marker attributes to i18n text
 - Highlights all internationalized text elements in the development environment
-- Supports opening the corresponding source file directly in the Cursor editor by pressing Shift+Option(Alt) and clicking on the text
+- Supports opening the corresponding source file directly in your preferred editor by pressing Shift+Option(Alt) and clicking on the text
+- Customizable editor protocol (VS Code, Atom, Sublime, Cursor, etc.)
 
 ## Installation
 ```bash
@@ -30,9 +31,24 @@ const config = defineConfig({
   ],
 }); 
 if (process.env.NODE_ENV === 'development') {
-  config.plugins.push(createI18nInspector());
+  config.plugins.push(createI18nInspector({
+    editor: 'cursor'
+  }));
 }
 export default config;
+```
+
+### Configuration Options
+
+You can customize the plugin by passing options to the `createI18nInspector` function:
+
+```ts
+createI18nInspector({
+  // The editor to use for opening files
+  // Default: 'vscode'
+  // Other common values: 'vscode', 'atom', 'cursor', etc.
+  editor: 'cursor'
+})
 ```
 
 ## Demo
@@ -54,7 +70,7 @@ Rendered HTML (debug attributes added automatically):
 
 1. In development mode, all text nodes using `t()` or `$t()` will be highlighted (with a gold border)
 2. Hovering the mouse over translated text will display its corresponding internationalization key
-3. Pressing Shift+Option key and clicking on the text will open the corresponding source file location in the Cursor editor
+3. Pressing Shift+Option key and clicking on the text will open the corresponding source file location in your configured editor
 
 ## Example Project
 

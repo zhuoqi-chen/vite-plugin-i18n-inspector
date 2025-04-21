@@ -3,7 +3,24 @@
 import { parse } from '@vue/compiler-sfc';
 import type { Plugin, ViteDevServer } from 'vite';
 import type { Connect } from 'vite';
-const clientScript = `
+
+/**
+ * Configuration options for the i18n inspector
+ */
+export interface I18nInspectorOptions {
+  /**
+   * The editor to use for opening files
+   * @default 'cursor'
+   * @example 'vscode', 'atom', 'sublime', etc.
+   */
+  editor?: string;
+}
+
+// This function generates the client script with the specified editor
+function generateClientScript(options: I18nInspectorOptions) {
+  const editorPrefix = options.editor ? `${options.editor}://file/` : 'vscode://file/';
+  
+  return `
 (function() {
     'use strict';
     
@@ -25,7 +42,7 @@ const clientScript = `
                     e.preventDefault();
                     e.stopPropagation();
                     var link = document.createElement('a');
-                    link.href = 'cursor://file/' + path;
+                    link.href = '${editorPrefix}' + path;
                     link.style.display = 'none';
                     document.body.appendChild(link);
                     link.click();
@@ -38,15 +55,28 @@ const clientScript = `
     insertStyle();
     document.addEventListener('click', handleClick, {capture: true});
 })(); 
-`
+`;
+}
+
 /**
  * Vite plugin that adds data-i18n attributes to elements using i18n translation functions
  * in Vue templates.
  *
  * This plugin transforms Vue templates to add data-i18n attributes to elements
  * that use t() or $t() functions for internationalization.
+ * 
+ * @param options - Configuration options for the plugin
  */
-export function createI18nInspector(): Plugin {
+export function createI18nInspector(options: I18nInspectorOptions = {}): Plugin {
+    // Set default options
+    const resolvedOptions: I18nInspectorOptions = {
+        editor: 'cursor',
+        ...options
+    };
+    
+    // Generate client script based on options
+    const clientScript = generateClientScript(resolvedOptions);
+    
     return {
         name: 'vite-plugin-i18n-attribute',
         enforce: 'pre',
