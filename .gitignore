@@ -1,0 +1,11 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+
+# IDEs and editors
+.idea/
+*.swp
+*.swo
+.DS_Store

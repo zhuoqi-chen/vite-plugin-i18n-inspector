@@ -9,6 +9,8 @@
 ## 安装
 ```bash
 npm install vite-plugin-i18n-inspector --save-dev
+# 或者使用 pnpm
+pnpm add -D vite-plugin-i18n-inspector
 ```
 
 ## 配置
@@ -37,4 +39,23 @@ export default defineConfig({
   翻译后的文本内容
 </div>
 ```
+
+## 示例项目
+
+我们提供了一个完整的示例项目，位于仓库的 `/example` 目录中。
+
+### 运行示例
+
+使用以下命令快速运行示例：
+
+```bash
+pnpm example
+```
+
+这个命令会：
+1. 构建插件
+2. 安装示例项目依赖
+3. 启动开发服务器
+
+有关示例的更多详细信息，请参阅 [example/README.md](./example/README.md)。
 

@@ -1,0 +1,48 @@
+{
+  "name": "vite-plugin-i18n-inspector",
+  "version": "1.0.0",
+  "description": "A Vite plugin to enhance i18n development experience in Vue applications",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "pnpm build",
+    "example": "pnpm build && cd example && pnpm dev"
+  },
+  "keywords": [
+    "vite-plugin",
+    "i18n",
+    "vue",
+    "internationalization"
+  ],
+  "author": "zhuoqi.chen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhuoqi-chen/vite-plugin-i18n-inspector"
+  },
+  "peerDependencies": {
+    "vite": "^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0",
+    "@vue/compiler-sfc": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
+  }
+}
