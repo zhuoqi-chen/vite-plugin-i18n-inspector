@@ -1,7 +1,44 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable complexity */
 import { parse } from '@vue/compiler-sfc';
-
+import type { Plugin, ViteDevServer } from 'vite';
+import type { Connect } from 'vite';
+const clientScript = `
+(function() {
+    'use strict';
+    
+    // Basic style injection
+    function insertStyle() {
+        var css = "*[data-i18n-key]{position:relative!important;border:1px solid goldenrod!important}*[data-i18n-key]:hover::before{display:block;position:absolute;top:-20px;right:0;color:red;background:white;padding:2px 4px;border:1px solid #ccc;font-size:12px;content:attr(data-i18n-key);z-index:9999}";
+        var style = document.createElement('style');
+        style.textContent = css;
+        document.head.appendChild(style);
+    }
+    
+    // Handle click events
+    function handleClick(e) {
+        if (e.altKey && e.shiftKey) {
+            var el = e.target.closest('[data-file-path]');
+            if (el) {
+                var path = el.getAttribute('data-file-path');
+                if (path) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var link = document.createElement('a');
+                    link.href = 'cursor://file/' + path;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        }
+    }
+    
+    insertStyle();
+    document.addEventListener('click', handleClick, {capture: true});
+})(); 
+`
 /**
  * Vite plugin that adds data-i18n attributes to elements using i18n translation functions
  * in Vue templates.
@@ -9,7 +46,7 @@ import { parse } from '@vue/compiler-sfc';
  * This plugin transforms Vue templates to add data-i18n attributes to elements
  * that use t() or $t() functions for internationalization.
  */
-export function createI18nInspector() {
+export function createI18nInspector(): Plugin {
     return {
         name: 'vite-plugin-i18n-attribute',
         enforce: 'pre',
@@ -95,7 +132,7 @@ export function createI18nInspector() {
 
                         // Wrap the expression with a span containing the data-i18n attribute
                         // and the data-file-path attribute with relative path and position information
-                        return `<span data-i18n="${key}" data-file-path="${relativeFilePath}:${absoluteLine}:${absoluteColumn}">${match}</span>`;
+                        return `<span data-i18n-key="${key}" data-file-path="${relativeFilePath}:${absoluteLine}:${absoluteColumn}">${match}</span>`;
                     }
 
                     return match;
@@ -118,5 +155,30 @@ export function createI18nInspector() {
                 return null;
             }
         },
+        configureServer(server: ViteDevServer) {
+            return () => {
+                server.middlewares.use((_req: Connect.IncomingMessage, res: any, next: Connect.NextFunction) => {
+                    // Intercept HTML responses
+                    const originalEnd = res.end;
+                    
+                    res.end = function(chunk: any, ...args: any[]) {
+                        if (res.getHeader('Content-Type') && String(res.getHeader('Content-Type')).includes('text/html')) {
+                            // Only inject in development mode
+                            let html = chunk.toString();
+                            
+                            // Inject the debug script before </body>
+                            const scriptToInject = `<script>${clientScript}</script>`;
+                            
+                            html = html.replace('</body>', `${scriptToInject}</body>`);
+                            return originalEnd.call(res, html, ...args);
+                        }
+                        
+                        return originalEnd.call(res, chunk, ...args);
+                    };
+                    
+                    next();
+                });
+            };
+        }
     };
 }

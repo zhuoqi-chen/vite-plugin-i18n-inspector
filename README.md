@@ -1,61 +1,77 @@
 # vite-plugin-i18n-inspector
 
-一个Vite插件，用于增强Vue应用中的国际化（i18n）开发体验。此插件会自动识别Vue模板中的`{{t()}}`或`{{$t()}}`表达式，并在对应的DOM节点上添加两个关键属性：
-- `data-i18n-key`：存储国际化键值
-- `data-file-path`：记录当前文件路径
+A Vite plugin to enhance the internationalization (i18n) development experience in Vue applications. This plugin automatically identifies `{{t()}}` or `{{$t()}}` expressions in Vue templates and adds two key attributes to the corresponding DOM nodes:
+- `data-i18n-key`: Stores the internationalization key
+- `data-file-path`: Records the current file path
 
-在开发环境中，开发者可以通过点击页面上的翻译文本，快速定位到对应的Vue源文件及其精确位置，大幅提高国际化开发和调试效率。
+In development environments, developers can click on translated text on the page to quickly locate the corresponding Vue source file and its exact position, significantly improving the efficiency of internationalization development and debugging.
 
-## 安装
+## Features
+
+- Automatically adds marker attributes to i18n text
+- Highlights all internationalized text elements in the development environment
+- Supports opening the corresponding source file directly in the Cursor editor by pressing Shift+Option(Alt) and clicking on the text
+
+## Installation
 ```bash
 npm install vite-plugin-i18n-inspector --save-dev
-# 或者使用 pnpm
+# or using pnpm
 pnpm add -D vite-plugin-i18n-inspector
 ```
 
-## 配置
+## Configuration
 ```ts
 import { defineConfig } from 'vite';
 import { createI18nInspector } from 'vite-plugin-i18n-inspector';
 
-export default defineConfig({
+const config = defineConfig({
   plugins: [
-    createI18nInspector(),
+    vue(),
   ],
-});
+}); 
+if (process.env.NODE_ENV === 'development') {
+  config.plugins.push(createI18nInspector());
+}
+export default config;
 ```
 
-## 效果展示
-在Vue文件中使用国际化函数：
+## Demo
+Using an internationalization function in a Vue file:
 ```vue
 <template>
   <div>{{ t('test') }}</div>
 </template>
 ```
 
-渲染后的HTML（自动添加了调试属性）：
+Rendered HTML (debug attributes added automatically):
 ```html
 <div data-i18n-key="test" data-file-path="test.vue">
-  翻译后的文本内容
+  Translated text content
 </div>
 ```
 
-## 示例项目
+## Usage
 
-我们提供了一个完整的示例项目，位于仓库的 `/example` 目录中。
+1. In development mode, all text nodes using `t()` or `$t()` will be highlighted (with a gold border)
+2. Hovering the mouse over translated text will display its corresponding internationalization key
+3. Pressing Shift+Option key and clicking on the text will open the corresponding source file location in the Cursor editor
 
-### 运行示例
+## Example Project
 
-使用以下命令快速运行示例：
+We provide a complete example project in the `/example` directory of the repository.
+
+### Running the Example
+
+Use the following command to quickly run the example:
 
 ```bash
 pnpm example
 ```
 
-这个命令会：
-1. 构建插件
-2. 安装示例项目依赖
-3. 启动开发服务器
+This command will:
+1. Build the plugin
+2. Install example project dependencies
+3. Start the development server
 
-有关示例的更多详细信息，请参阅 [example/README.md](./example/README.md)。
+For more details about the example, please refer to [example/README.md](./example/README.md).
 

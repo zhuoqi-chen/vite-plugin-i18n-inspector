@@ -3,11 +3,14 @@ import { defineConfig } from 'vite';
 // @ts-ignore
 import vue from '@vitejs/plugin-vue';
 // @ts-ignore
-import { createI18nInspector } from '../dist';
+import { createI18nInspector } from 'vite-plugin-i18n-inspector';
 
-export default defineConfig({
+const config = defineConfig({
   plugins: [
     vue(),
-    createI18nInspector(),
   ],
 }); 
+if (process.env.NODE_ENV === 'development') {
+  config.plugins.push(createI18nInspector());
+}
+export default config;
