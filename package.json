@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-i18n-inspector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Vite plugin to enhance i18n development experience in Vue applications",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,6 +23,9 @@
     "prepublishOnly": "pnpm build",
     "example": "pnpm build && cd example && pnpm install && pnpm dev"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "keywords": [
     "vite-plugin",
     "i18n",
@@ -33,7 +36,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zhuoqi-chen/vite-plugin-i18n-inspector"
+    "url": "git+https://github.com/zhuoqi-chen/vite-plugin-i18n-inspector.git"
   },
   "peerDependencies": {
     "vite": "^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0",
