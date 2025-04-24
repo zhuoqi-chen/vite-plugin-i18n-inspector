@@ -39,7 +39,7 @@ function generateClientScript(options: I18nInspectorOptions) {
         document.head.appendChild(baseStyle);
         
         // Highlight styles in a separate stylesheet
-        var highlightCSS = "*[data-i18n-key]{position:relative!important;border:1px solid goldenrod!important}*[data-i18n-key]:hover::before{display:block;position:absolute;top:-20px;right:0;color:red;background:white;padding:2px 4px;border:1px solid #ccc;font-size:12px;content:attr(data-i18n-key);z-index:9999}";
+        var highlightCSS = "*[data-i18n-key]{position:relative!important;border:1px solid goldenrod!important}*[data-i18n-key]:hover::before{display:block;position:absolute;top:0;right:0;transform:translate(0,-100%);color:goldenrod;background:white;padding:2px 4px;border:1px solid #ccc;font-size:12px;content:attr(data-i18n-key);z-index:9999}";
         
         highlightStylesheet = document.createElement('style');
         highlightStylesheet.id = 'i18n-highlight-styles';
