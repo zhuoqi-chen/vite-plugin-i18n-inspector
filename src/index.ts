@@ -24,12 +24,58 @@ function generateClientScript(options: I18nInspectorOptions) {
 (function() {
     'use strict';
     
+    // Get highlight state from localStorage or default to true if not set
+    var highlightEnabled = localStorage.getItem('i18n-highlight-enabled') === null ? 
+                            true : localStorage.getItem('i18n-highlight-enabled') !== 'false';
+    var highlightStylesheet;
+    
     // Basic style injection
     function insertStyle() {
-        var css = "*[data-i18n-key]{position:relative!important;border:1px solid goldenrod!important}*[data-i18n-key]:hover::before{display:block;position:absolute;top:-20px;right:0;color:red;background:white;padding:2px 4px;border:1px solid #ccc;font-size:12px;content:attr(data-i18n-key);z-index:9999}";
-        var style = document.createElement('style');
-        style.textContent = css;
-        document.head.appendChild(style);
+        // Regular styles
+        var baseCSS = ".i18n-toggle{position:fixed;right:0;bottom:20px;background:#fff;border:1px solid #ccc;border-radius:100px 0 0 100px;padding:4px;font-size:12px;cursor:pointer;z-index:10000;display:flex;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);transition:transform 0.3s ease;transform:translateX(75%)}.i18n-toggle:hover{transform:translateX(0)}.i18n-toggle__switch{position:relative;display:inline-block;width:30px;height:16px;margin-left:8px}.i18n-toggle__switch input{opacity:0;width:0;height:0}.i18n-toggle__slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.4s;border-radius:16px}.i18n-toggle__slider:before{position:absolute;content:'';height:12px;width:12px;left:2px;bottom:2px;background-color:white;transition:.4s;border-radius:50%}.i18n-toggle__switch input:checked + .i18n-toggle__slider{background-color:#2196F3}.i18n-toggle__switch input:checked + .i18n-toggle__slider:before{transform:translateX(14px)}.i18n-toggle__icon{display:flex;align-items:center;justify-content:center;width:24px;height:100%;margin-right:4px;font-weight:bold;font-size:14px;color:#2196F3}";
+        
+        var baseStyle = document.createElement('style');
+        baseStyle.textContent = baseCSS;
+        document.head.appendChild(baseStyle);
+        
+        // Highlight styles in a separate stylesheet
+        var highlightCSS = "*[data-i18n-key]{position:relative!important;border:1px solid goldenrod!important}*[data-i18n-key]:hover::before{display:block;position:absolute;top:-20px;right:0;color:red;background:white;padding:2px 4px;border:1px solid #ccc;font-size:12px;content:attr(data-i18n-key);z-index:9999}";
+        
+        highlightStylesheet = document.createElement('style');
+        highlightStylesheet.id = 'i18n-highlight-styles';
+        highlightStylesheet.textContent = highlightCSS;
+        document.head.appendChild(highlightStylesheet);
+        
+        // If first time user (no setting in localStorage), set to enabled
+        if (localStorage.getItem('i18n-highlight-enabled') === null) {
+            localStorage.setItem('i18n-highlight-enabled', 'true');
+        }
+        
+        // Initial state
+        updateHighlightState();
+    }
+    
+    // Create toggle button
+    function createToggle() {
+        var toggle = document.createElement('div');
+        toggle.className = 'i18n-toggle';
+        toggle.innerHTML = '<div class="i18n-toggle__icon"><svg style="width: 1rem;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" viewBox="0 0 24 24" class="vt-locales-btn-icon" data-v-817baab4=""><path d="M0 0h24v24H0z" fill="none"></path><path d=" M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z " class="css-c4d79v"></path></svg></div>Highlight<label class="i18n-toggle__switch"><input type="checkbox" ' + (highlightEnabled ? 'checked' : '') + '><span class="i18n-toggle__slider"></span></label>';
+        document.body.appendChild(toggle);
+        
+        // Add event listener to checkbox
+        var checkbox = toggle.querySelector('input');
+        checkbox.addEventListener('change', function() {
+            highlightEnabled = checkbox.checked;
+            localStorage.setItem('i18n-highlight-enabled', highlightEnabled ? 'true' : 'false');
+            updateHighlightState();
+        });
+    }
+    
+    // Update highlight state by enabling/disabling the stylesheet
+    function updateHighlightState() {
+        if (highlightStylesheet) {
+            highlightStylesheet.disabled = !highlightEnabled;
+        }
     }
     
     // Handle click events
@@ -52,7 +98,9 @@ function generateClientScript(options: I18nInspectorOptions) {
         }
     }
     
+    // Initialize
     insertStyle();
+    createToggle();
     document.addEventListener('click', handleClick, {capture: true});
 })(); 
 `;
